@@ -1,0 +1,16 @@
+# Cloudflare Pages 헤더 설정 — 홍주화담
+
+# 모든 경로 — 기본 보안 헤더
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# HTML — 항상 최신 내용 노출 (캐시 즉시 재검증)
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# 이미지·미디어 — 장기 캐시
+/images/*
+  Cache-Control: public, max-age=31536000, immutable

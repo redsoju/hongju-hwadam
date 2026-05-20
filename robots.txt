@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# 내부 문서는 검색엔진에 노출하지 않음 (애초에 업로드하지 않는 것이 원칙)
+Disallow: /*.md$
+
+Sitemap: https://redsoju.com/sitemap.xml

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!--
+    홍주화담 — og:image 임시 placeholder (1200 x 630)
+    이 SVG를 PNG로 변환해 같은 폴더에 og-image.png 로 저장하세요.
+    (브라우저에서 열어 확인 → SVG→PNG 변환 도구 사용. 배포 전 1회 작업)
+  -->
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700');
+      .wordmark { font-family: 'Noto Serif KR', serif; font-weight: 700; }
+      .hanja    { font-family: 'Noto Serif KR', serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- 배경: 먹색 -->
+  <rect width="1200" height="630" fill="#171717"/>
+
+  <!-- 중앙 위: 한글 워드마크 -->
+  <text x="600" y="312" class="wordmark" font-size="118" fill="#F8F4EC"
+        text-anchor="middle" letter-spacing="16">홍주화담</text>
+
+  <!-- 중앙 아래: 한자 보조 표기 -->
+  <text x="600" y="408" class="hanja" font-size="38" fill="#8E1B1B"
+        text-anchor="middle" letter-spacing="22">紅酒和談</text>
+</svg>

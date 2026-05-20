@@ -1,0 +1,7 @@
+# Cloudflare Pages 리다이렉트 규칙 — 홍주화담
+# www → redsoju.com 도메인 통합은 Cloudflare 대시보드에서 설정합니다.
+# (deploy-guide.md 5단계 참고)
+
+# .html 확장자 없는 깔끔한 주소로 통일
+/index.html   /        301
+/wadam.html   /wadam   301
