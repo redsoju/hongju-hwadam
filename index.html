@@ -64,17 +64,78 @@
   </script>
 
   <style>
-    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 0;
+      scroll-snap-type: y mandatory;
+    }
     body { background-color: #F4F4F1; color: #171717; font-family: 'Pretendard', sans-serif; }
 
-    /* Hero 영상 위 먹색 그라데이션 오버레이 */
-    .hero-overlay {
-      background: linear-gradient(
-        to bottom,
-        rgba(23, 23, 23, 0.25) 0%,
-        rgba(23, 23, 23, 0.35) 50%,
-        rgba(23, 23, 23, 0.65) 100%
-      );
+    /* ─────────────────────────────────────────────
+       풀페이지 스냅 — 한 섹션이 한 화면에 맞춰 부드럽게 정렬
+       야마자키·애플 류의 시네마틱 스크롤 결
+       ───────────────────────────────────────────── */
+    .snap-section {
+      scroll-snap-align: start;
+      scroll-snap-stop: normal; /* 부드러운 통과 허용 — 강제 정지 X */
+      min-height: 100vh;
+    }
+    .snap-end {
+      scroll-snap-align: end;
+      scroll-snap-stop: normal;
+    }
+    /* 카드 영역 — 큰 화면에서만 풀스크린 스냅, 좁은 폭에서는 자유 스크롤
+       (PRODUCT 3카드·EXPERIENCE 2카드가 1280 미만에서는 1열로 쌓여 1화면 초과) */
+    .snap-cards {
+      scroll-snap-align: start;
+      scroll-snap-stop: normal;
+      min-height: 100vh;
+    }
+    @media (max-width: 1279px) {
+      .snap-cards {
+        scroll-snap-align: none;
+        min-height: auto;
+      }
+    }
+
+    /* 모바일은 스냅 완화 — 터치 결 유지 (mandatory가 답답함을 유발) */
+    @media (max-width: 767px) {
+      html { scroll-snap-type: y proximity; }
+    }
+
+    /* 사용자가 동작 감소를 선호하면 스냅도 끈다 */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-snap-type: none; scroll-behavior: auto; }
+    }
+
+    /* Hero 베일 — 영상 위 검은 막 (가독성 + 시네마틱 깊이 + 루프 이음새 가림)
+       두 애니메이션 결합:
+         · hero-veil-intro 9s 1회 — 첫 등장(2~4s 페이드아웃 + 4~7s 노출 + 7~8s 재가림)
+         · hero-veil-loop  7s 무한 (delay 9s) — 9s 이후 매 7초 가림→노출→가림 반복
+       intro 종료(opacity 1, 9s)와 loop 시작(opacity 1, 0%)이 정확히 일치 → 매끄러운 이음
+       z-index: 1 로 video(z-auto) 위에 명시. fill-mode: both 로 delay/종료 보호.
+       영상 파일이 없을 땐 베일이 옅어져도 같은 bg-ink가 비쳐 자동 fallback. */
+    .hero-veil {
+      opacity: 1;
+      z-index: 1;
+      animation:
+        hero-veil-intro 9s ease-in-out 0s 1        both,
+        hero-veil-loop  7s ease-in-out 9s infinite both;
+    }
+    @keyframes hero-veil-intro {
+      0%     { opacity: 1;   } /* 0s  — 가림 (글자 페이드인 시작) */
+      22.22% { opacity: 1;   } /* 2s  — 가림 (영문 등장 직전까지) */
+      44.44% { opacity: 0.4; } /* 4s  — 1.0→0.4 페이드아웃 완료 (영상 드러남) */
+      77.78% { opacity: 0.4; } /* 7s  — 영상 노출 유지 */
+      88.89% { opacity: 1;   } /* 8s  — 0.4→1.0 페이드인 (다시 가림) */
+      100%   { opacity: 1;   } /* 9s  — 가림 유지 (loop 시작점과 연결) */
+    }
+    @keyframes hero-veil-loop {
+      0%     { opacity: 1;   } /* 9s  — 가림 */
+      28.57% { opacity: 0.4; } /* 11s — 1.0→0.4 페이드아웃 (영상 드러남) */
+      71.43% { opacity: 0.4; } /* 14s — 영상 노출 유지 */
+      85.71% { opacity: 1;   } /* 15s — 0.4→1.0 페이드인 (가림) */
+      100%   { opacity: 1;   } /* 16s — 가림 유지 (다음 사이클로 자연 연결) */
     }
 
     /* 내비게이션 — 스크롤 시 배경·글자색 전환 */
@@ -100,14 +161,24 @@
       animation: scroll-line 2.8s ease-in-out infinite;
     }
 
-    /* 슬로건 페이드인 */
+    /* 슬로건 페이드인 — 시간축 압축 (한자 0s → 한글 0.8s → 영문 1.8s → 베일 2s → 완료 4s) */
     @keyframes fade-up {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .fade-up-1 { animation: fade-up 1.5s ease-out 0.5s both; }
-    .fade-up-2 { animation: fade-up 1.5s ease-out 2.0s both; }
-    .fade-up-3 { animation: fade-up 1.5s ease-out 3.5s both; }
+    .fade-up-1 { animation: fade-up 1s   ease-out 0s    both; } /* 한자  0   ~ 1.0s */
+    .fade-up-2 { animation: fade-up 1.2s ease-out 0.8s  both; } /* 한글  0.8 ~ 2.0s */
+    .fade-up-3 { animation: fade-up 1s   ease-out 1.8s  both; } /* 영문  1.8 ~ 2.8s */
+
+    /* 모션 감소 선호 사용자 — 페이드 애니 모두 끔, 최종 상태로 즉시 고정 */
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up-1, .fade-up-2, .fade-up-3 {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+      .hero-veil { animation: none; opacity: 0.4; }
+    }
 
     /* 스크롤 시 천천히 떠오르는 페이드인 */
     .reveal {
@@ -196,20 +267,24 @@
   <!-- ─────────────────────────────────────────────
        Hero — 먹색 시네마틱 (영상 톤의 정직한 미리보기)
        ───────────────────────────────────────────── -->
-  <section class="relative h-screen w-full overflow-hidden bg-ink">
+  <section class="snap-section relative h-screen w-full overflow-hidden bg-ink">
 
-    
-      <video
-        class="absolute inset-0 w-full h-full object-cover"
-        autoplay muted loop playsinline
-        poster="hero-poster.jpg">
-        <source src="hero.mp4" type="video/mp4" />
-      </video>
-      <div class="absolute inset-0 hero-overlay"></div>
-   
+    <!-- 배경 영상 — autoplay/muted/playsinline 3종 (모바일 자동재생 필수 조건)
+         images/hero.mp4 를 떨궈두면 자동 작동. 파일이 없으면 베일이 덮어 fallback 정상. -->
+    <video
+      class="absolute inset-0 w-full h-full object-cover"
+      autoplay muted loop playsinline preload="metadata"
+      poster="images/hero-poster.jpg"
+      aria-hidden="true">
+      <source src="images/hero.mp4" type="video/mp4" />
+    </video>
 
-    <!-- 중앙 슬로건 (수직 중앙에서 살짝 위로 올려 scroll 인디케이터와 호흡 확보) -->
-    <div class="relative h-full flex flex-col items-center justify-center px-6 pb-40 md:pb-48 text-center">
+    <!-- 먹색 베일 — 0~2s 완전 가림 → 2~4s에 0.4로 페이드 (영상 드러남)
+         영상이 없을 때도 같은 bg-ink가 비쳐서 시각적 변화 없음 (자동 fallback) -->
+    <div class="hero-veil absolute inset-0 bg-ink"></div>
+
+    <!-- 중앙 슬로건 (z-10 — 영상·베일 위에 항상 떠 있음) -->
+    <div class="relative z-10 h-full flex flex-col items-center justify-center px-6 pb-40 md:pb-48 text-center">
 
       <p class="fade-up-1 font-body text-hongju text-sm md:text-base tracking-hanja mb-10 md:mb-14">
         紅酒和談
@@ -225,8 +300,8 @@
       </p>
     </div>
 
-    <!-- 스크롤 인디케이터 -->
-    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
+    <!-- 스크롤 인디케이터 (z-10 — 영상 위) -->
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3">
       <span class="font-latin text-paper/60 text-xs tracking-[0.4em] lowercase">scroll</span>
       <span class="block w-px h-10 bg-paper/60 scroll-line"></span>
     </div>
@@ -238,7 +313,7 @@
   <section id="wadam" class="bg-paper text-ink">
 
     <!-- 섹션 인트로 -->
-    <div class="min-h-[80vh] flex flex-col items-center justify-center px-6 text-center">
+    <div class="snap-section flex flex-col items-center justify-center px-6 text-center">
       <h2 class="reveal font-body font-medium text-ink text-6xl md:text-8xl tracking-hanja leading-none">
         和談
       </h2>
@@ -251,7 +326,7 @@
     </div>
 
     <!-- 01 · 첫 잔 -->
-    <article class="min-h-[90vh] flex items-center px-6 md:px-10 py-12 md:py-16">
+    <article class="snap-section flex items-center px-6 md:px-10 py-12 md:py-16">
       <div class="max-w-5xl mx-auto w-full grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16 items-start">
         <header class="reveal">
           <p class="font-latin text-ink-soft text-sm tracking-[0.4em]">01</p>
@@ -276,7 +351,7 @@
     </div>
 
     <!-- 02 · 깊어지는 시간 -->
-    <article class="min-h-[90vh] flex items-center px-6 md:px-10 py-12 md:py-16">
+    <article class="snap-section flex items-center px-6 md:px-10 py-12 md:py-16">
       <div class="max-w-5xl mx-auto w-full grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16 items-start">
         <header class="reveal">
           <p class="font-latin text-ink-soft text-sm tracking-[0.4em]">02</p>
@@ -300,7 +375,7 @@
     </div>
 
     <!-- 03 · 다음 날의 여운 -->
-    <article class="min-h-[90vh] flex items-center px-6 md:px-10 py-12 md:py-16">
+    <article class="snap-section flex items-center px-6 md:px-10 py-12 md:py-16">
       <div class="max-w-5xl mx-auto w-full grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16 items-start">
         <header class="reveal">
           <p class="font-latin text-ink-soft text-sm tracking-[0.4em]">03</p>
@@ -326,7 +401,7 @@
   <section id="story" class="bg-paper text-ink">
 
     <!-- 섹션 인트로 -->
-    <div class="py-32 md:py-40 px-6 text-center">
+    <div class="snap-section flex flex-col items-center justify-center px-6 text-center">
       <h2 class="reveal font-latin text-ink-soft text-3xl md:text-4xl tracking-[0.4em] uppercase">
         The Story
       </h2>
@@ -336,7 +411,7 @@
     </div>
 
     <!-- 01 · 천년의 술 (이미지 좌측) -->
-    <article class="reveal max-w-6xl mx-auto px-6 md:px-10 py-12 md:py-16">
+    <article class="snap-section reveal max-w-6xl mx-auto flex items-center px-6 md:px-10 py-12 md:py-16">
       <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
         <figure class="aspect-[4/5] bg-mist overflow-hidden">
           <img src="images/story-jindo-sea.png" alt="진도의 바다" loading="lazy"
@@ -356,7 +431,7 @@
     </article>
 
     <!-- 02 · 붉은빛의 비밀, 지초 (이미지 우측) -->
-    <article class="reveal max-w-6xl mx-auto px-6 md:px-10 py-12 md:py-16">
+    <article class="snap-section reveal max-w-6xl mx-auto flex items-center px-6 md:px-10 py-12 md:py-16">
       <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
         <figure class="md:order-2 aspect-[4/5] bg-mist overflow-hidden">
           <img src="images/story-jicho-root.png" alt="지초의 붉은 뿌리" loading="lazy"
@@ -377,7 +452,7 @@
     </article>
 
     <!-- 03 · 농부의 손으로 (이미지 좌측) -->
-    <article class="reveal max-w-6xl mx-auto px-6 md:px-10 py-12 md:py-16">
+    <article class="snap-section reveal max-w-6xl mx-auto flex items-center px-6 md:px-10 py-12 md:py-16">
       <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
         <figure class="aspect-[4/5] bg-mist overflow-hidden">
           <img src="images/story-farmer-hands.png" alt="흙을 만지는 농부의 손" loading="lazy"
@@ -398,7 +473,7 @@
     </article>
 
     <!-- 04 · 천년에 백년을 더하다 (이미지 우측) -->
-    <article class="reveal max-w-6xl mx-auto px-6 md:px-10 py-12 md:py-16">
+    <article class="snap-section reveal max-w-6xl mx-auto flex items-center px-6 md:px-10 py-12 md:py-16">
       <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
         <figure class="md:order-2 aspect-[4/5] bg-mist flex items-end p-6">
           <figcaption class="font-body text-ink-soft text-sm tracking-widest">
@@ -419,7 +494,7 @@
     </article>
 
     <!-- 마침표 — 별도로 떼어낸 한 줄 -->
-    <div class="py-40 md:py-56 px-6 text-center">
+    <div class="snap-section flex flex-col items-center justify-center px-6 text-center">
       <p class="reveal font-head font-medium text-ink text-2xl md:text-4xl leading-relaxed">
         <span class="text-hongju">홍주화담</span>은 그 잔의 이름이다.
       </p>
@@ -433,7 +508,7 @@
   <section id="product" class="bg-paper text-ink">
 
     <!-- 섹션 인트로 -->
-    <div class="pt-40 md:pt-56 pb-16 md:pb-20 px-6 text-center">
+    <div class="snap-section flex flex-col items-center justify-center px-6 text-center">
       <h2 class="reveal font-latin text-ink-soft text-3xl md:text-4xl tracking-[0.4em] uppercase">
         The Product
       </h2>
@@ -443,7 +518,7 @@
     </div>
 
     <!-- 3열 제품 그리드 -->
-    <div class="max-w-6xl mx-auto px-6 md:px-10 pb-32 md:pb-40">
+    <div class="snap-cards max-w-6xl mx-auto flex items-center px-6 md:px-10 py-12 md:py-16">
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-10 md:gap-12">
 
         <!-- 홍주화담40 375ml · 첫 잔 -->
@@ -514,7 +589,7 @@
   <section id="experience" class="bg-paper text-ink">
 
     <!-- 섹션 인트로 -->
-    <div class="pt-32 md:pt-40 pb-16 md:pb-20 px-6 text-center">
+    <div class="snap-section flex flex-col items-center justify-center px-6 text-center">
       <h2 class="reveal font-latin text-ink-soft text-3xl md:text-4xl tracking-[0.4em] uppercase">
         The Experience
       </h2>
@@ -524,7 +599,7 @@
     </div>
 
     <!-- 2열 체험 그리드 -->
-    <div class="max-w-6xl mx-auto px-6 md:px-10 pb-32 md:pb-40">
+    <div class="snap-cards max-w-6xl mx-auto flex items-center px-6 md:px-10 py-12 md:py-16">
       <div class="grid md:grid-cols-2 gap-10 md:gap-14">
 
         <!-- 잔잔, 진도 · 입문 -->
@@ -582,7 +657,7 @@
   <!-- ─────────────────────────────────────────────
        푸터
        ───────────────────────────────────────────── -->
-  <footer class="bg-ink text-paper">
+  <footer class="snap-end bg-ink text-paper">
     <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-20">
 
       <!-- 브랜드 마크 -->
