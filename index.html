@@ -108,34 +108,22 @@
       html { scroll-snap-type: none; scroll-behavior: auto; }
     }
 
-    /* Hero 베일 — 영상 위 검은 막 (가독성 + 시네마틱 깊이 + 루프 이음새 가림)
-       두 애니메이션 결합:
-         · hero-veil-intro 9s 1회 — 첫 등장(2~4s 페이드아웃 + 4~7s 노출 + 7~8s 재가림)
-         · hero-veil-loop  7s 무한 (delay 9s) — 9s 이후 매 7초 가림→노출→가림 반복
-       intro 종료(opacity 1, 9s)와 loop 시작(opacity 1, 0%)이 정확히 일치 → 매끄러운 이음
-       z-index: 1 로 video(z-auto) 위에 명시. fill-mode: both 로 delay/종료 보호.
+    /* Hero 베일 — 영상 위 검은 막 (가독성 + 시네마틱 깊이)
+       단일 애니메이션으로 단순화 (두 애니 cascade 충돌 회피):
+         · 0~2s: opacity 1 (글자 페이드인 동안 영상 가림)
+         · 2~4s: opacity 1 → 0.4 (영상 드러남)
+         · 4s 이후: 0.4 고정 (forwards)
+       클래스 안의 opacity declaration 제거 — 키프레임 0%가 초기값 보장.
+       z-index: 1 로 video(z-auto) 위에 명시.
        영상 파일이 없을 땐 베일이 옅어져도 같은 bg-ink가 비쳐 자동 fallback. */
     .hero-veil {
-      opacity: 1;
       z-index: 1;
-      animation:
-        hero-veil-intro 9s ease-in-out 0s 1        both,
-        hero-veil-loop  7s ease-in-out 9s infinite both;
+      animation: hero-veil-intro 4s ease-in-out 0s forwards;
     }
     @keyframes hero-veil-intro {
-      0%     { opacity: 1;   } /* 0s  — 가림 (글자 페이드인 시작) */
-      22.22% { opacity: 1;   } /* 2s  — 가림 (영문 등장 직전까지) */
-      44.44% { opacity: 0.4; } /* 4s  — 1.0→0.4 페이드아웃 완료 (영상 드러남) */
-      77.78% { opacity: 0.4; } /* 7s  — 영상 노출 유지 */
-      88.89% { opacity: 1;   } /* 8s  — 0.4→1.0 페이드인 (다시 가림) */
-      100%   { opacity: 1;   } /* 9s  — 가림 유지 (loop 시작점과 연결) */
-    }
-    @keyframes hero-veil-loop {
-      0%     { opacity: 1;   } /* 9s  — 가림 */
-      28.57% { opacity: 0.4; } /* 11s — 1.0→0.4 페이드아웃 (영상 드러남) */
-      71.43% { opacity: 0.4; } /* 14s — 영상 노출 유지 */
-      85.71% { opacity: 1;   } /* 15s — 0.4→1.0 페이드인 (가림) */
-      100%   { opacity: 1;   } /* 16s — 가림 유지 (다음 사이클로 자연 연결) */
+      0%   { opacity: 1;   } /* 0s — 가림 (글자 페이드인 시작) */
+      50%  { opacity: 1;   } /* 2s — 가림 유지 (영문 페이드인 직전까지) */
+      100% { opacity: 0.4; } /* 4s — 페이드아웃 완료 (영상 드러남, 이후 0.4 고정) */
     }
 
     /* 내비게이션 — 스크롤 시 배경·글자색 전환 */
