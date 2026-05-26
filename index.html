@@ -108,22 +108,25 @@
       html { scroll-snap-type: none; scroll-behavior: auto; }
     }
 
-    /* Hero 베일 — 영상 위 검은 막 (가독성 + 시네마틱 깊이)
-       단일 애니메이션으로 단순화 (두 애니 cascade 충돌 회피):
-         · 0~2s: opacity 1 (글자 페이드인 동안 영상 가림)
-         · 2~4s: opacity 1 → 0.4 (영상 드러남)
-         · 4s 이후: 0.4 고정 (forwards)
-       클래스 안의 opacity declaration 제거 — 키프레임 0%가 초기값 보장.
-       z-index: 1 로 video(z-auto) 위에 명시.
+    /* Hero 베일 — 영상 위 검은 막 (가독성 + 시네마틱 깊이 + 영상 루프 이음새 가림)
+       단일 10s 키프레임 무한 반복 (cascade 충돌 원천 차단):
+         · 0~2s : 1.0 (가림 — 글자 페이드인 보호)
+         · 2~4s : 1.0 → 0.4 페이드아웃 (영상 드러남)
+         · 4~9s : 0.4 (5초 노출, 영상 1회 풀 재생)
+         · 9~10s: 0.4 → 1.0 페이드인 (가림 복귀)
+         · 100%(10s) ↔ 0%(0s) = 1.0 일치 → 점프 없이 매끄러운 무한 루프
+       영상 5s 루프와 정수배 동기 → 영상 0/10/20s 이음새는 베일 1.0이 자동 가림.
+       클래스 안 opacity declaration 없음 → 키프레임이 초기값 보장 (F12 취소선 X).
+       fill-mode 미사용 → backwards 충돌 원인 제거.
        영상 파일이 없을 땐 베일이 옅어져도 같은 bg-ink가 비쳐 자동 fallback. */
     .hero-veil {
       z-index: 1;
-      animation: hero-veil-intro 4s ease-in-out 0s forwards;
+      animation: hero-veil-cycle 10s ease-in-out infinite;
     }
-    @keyframes hero-veil-intro {
-      0%   { opacity: 1;   } /* 0s — 가림 (글자 페이드인 시작) */
-      50%  { opacity: 1;   } /* 2s — 가림 유지 (영문 페이드인 직전까지) */
-      100% { opacity: 0.4; } /* 4s — 페이드아웃 완료 (영상 드러남, 이후 0.4 고정) */
+    @keyframes hero-veil-cycle {
+      0%, 20%  { opacity: 1;   } /* 0s ~ 2s — 가림 유지 */
+      40%, 90% { opacity: 0.4; } /* 4s ~ 9s — 페이드아웃 후 5초 노출 */
+      100%     { opacity: 1;   } /* 10s — 페이드인, 다음 사이클 0%(1.0)로 자연 연결 */
     }
 
     /* 내비게이션 — 스크롤 시 배경·글자색 전환 */
