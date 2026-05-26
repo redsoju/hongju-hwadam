@@ -1,8 +1,2 @@
-# Cloudflare Workers Static Assets 리다이렉트/리라이트 규칙
-# - www → apex 통합은 Cloudflare 대시보드의 Redirect Rules로 별도 처리
-
 /wadam       /hwadam       301
 /wadam.html  /hwadam       301
-
-/hwadam      /hwadam.html  200
-/hwadam/     /hwadam.html  200
