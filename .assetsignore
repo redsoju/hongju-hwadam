@@ -1,0 +1,13 @@
+.git
+.git/**
+.wrangler
+.wrangler/**
+node_modules
+node_modules/**
+.DS_Store
+README.md
+*.md
+wrangler.jsonc
+.gitignore
+package-lock.json
+package.json
