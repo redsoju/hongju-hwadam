@@ -1,11 +1,8 @@
 # Cloudflare Workers Static Assets 리다이렉트/리라이트 규칙
-# - 절대 URL(https://...) 사용 금지 (Workers Static Assets는 상대 경로만 허용)
 # - www → apex 통합은 Cloudflare 대시보드의 Redirect Rules로 별도 처리
 
-# 옛 /wadam 주소 → 새 /hwadam (301 영구 리다이렉트)
 /wadam       /hwadam       301
 /wadam.html  /hwadam       301
 
-# 클린 URL /hwadam → 내부적으로 /hwadam.html 서빙 (200 리라이트, 주소창은 /hwadam 유지)
 /hwadam      /hwadam.html  200
 /hwadam/     /hwadam.html  200
