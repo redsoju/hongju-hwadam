@@ -1,13 +1,11 @@
-# Cloudflare Pages 리다이렉트 규칙 — 홍주화담
+# Cloudflare Workers Static Assets 리다이렉트/리라이트 규칙
+# - 절대 URL(https://...) 사용 금지 (Workers Static Assets는 상대 경로만 허용)
+# - www → apex 통합은 Cloudflare 대시보드의 Redirect Rules로 별도 처리
 
-# www → 대표 도메인(redsoju.com) 통합 (야마자키·맥캘런 방식)
-# ※ Cloudflare 대시보드에서 www.redsoju.com 커스텀 도메인도 추가해야 작동합니다.
-https://www.redsoju.com/*   https://redsoju.com/:splat   301
+# 옛 /wadam 주소 → 새 /hwadam (301 영구 리다이렉트)
+/wadam       /hwadam       301
+/wadam.html  /hwadam       301
 
-# .html 확장자 없는 깔끔한 주소로 통일
-/index.html    /         301
-/hwadam.html   /hwadam   301
-
-# 옛 /wadam 주소 → /hwadam 으로 리네이밍 흡수
-/wadam.html    /hwadam   301
-/wadam         /hwadam   301
+# 클린 URL /hwadam → 내부적으로 /hwadam.html 서빙 (200 리라이트, 주소창은 /hwadam 유지)
+/hwadam      /hwadam.html  200
+/hwadam/     /hwadam.html  200
