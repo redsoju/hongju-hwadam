@@ -108,25 +108,23 @@
       html { scroll-snap-type: none; scroll-behavior: auto; }
     }
 
-    /* Hero 베일 — 영상 위 검은 막 (가독성 + 시네마틱 깊이 + 영상 루프 이음새 가림)
-       단일 10s 키프레임 무한 반복 (cascade 충돌 원천 차단):
-         · 0~2s : 1.0 (가림 — 글자 페이드인 보호)
-         · 2~4s : 1.0 → 0.4 페이드아웃 (영상 드러남)
-         · 4~9s : 0.4 (5초 노출, 영상 1회 풀 재생)
-         · 9~10s: 0.4 → 1.0 페이드인 (가림 복귀)
-         · 100%(10s) ↔ 0%(0s) = 1.0 일치 → 점프 없이 매끄러운 무한 루프
-       영상 5s 루프와 정수배 동기 → 영상 0/10/20s 이음새는 베일 1.0이 자동 가림.
-       클래스 안 opacity declaration 없음 → 키프레임이 초기값 보장 (F12 취소선 X).
-       fill-mode 미사용 → backwards 충돌 원인 제거.
-       영상 파일이 없을 땐 베일이 옅어져도 같은 bg-ink가 비쳐 자동 fallback. */
+    /* Hero 베일 — 영상 위 검은 막 + JS 영상 제어와 동기
+       단일 10s 키프레임 무한 반복:
+         · 0~2s : 1.0 (가림 — 글자 페이드인 보호, JS는 영상 currentTime=0 대기)
+         · 2~3s : 1.0 → 0.4 페이드아웃 1s (영상 0초 정지)
+         · 3~8s : 0.4 (5초 노출 — JS가 3s 시점에 영상 play, 영상 5s 길이 정확 일치)
+         · 8~9s : 0.4 → 1.0 페이드인 1s (영상 ended, 마지막 프레임 정지)
+         · 9~10s: 1.0 (가림 유지 — JS가 영상 currentTime=0 안전 리셋)
+         · 100%(10s) ↔ 0%(0s) = 1.0 일치 → 점프 없는 무한 루프
+       JS는 animationstart/animationiteration 이벤트로 사이클 0%와 자동 동기. */
     .hero-veil {
       z-index: 1;
       animation: hero-veil-cycle 10s ease-in-out infinite;
     }
     @keyframes hero-veil-cycle {
-      0%, 20%  { opacity: 1;   } /* 0s ~ 2s — 가림 유지 */
-      40%, 90% { opacity: 0.4; } /* 4s ~ 9s — 페이드아웃 후 5초 노출 */
-      100%     { opacity: 1;   } /* 10s — 페이드인, 다음 사이클 0%(1.0)로 자연 연결 */
+      0%,  20%  { opacity: 1;   } /* 0s ~ 2s  — 가림 유지 (영상 0초 대기) */
+      30%, 80%  { opacity: 0.4; } /* 3s ~ 8s  — 페이드아웃 후 5s 노출 (영상 재생) */
+      90%, 100% { opacity: 1;   } /* 9s ~ 10s — 페이드인 후 가림 유지 (영상 리셋) */
     }
 
     /* 내비게이션 — 스크롤 시 배경·글자색 전환 */
@@ -260,11 +258,13 @@
        ───────────────────────────────────────────── -->
   <section class="snap-section relative h-screen w-full overflow-hidden bg-ink">
 
-    <!-- 배경 영상 — autoplay/muted/playsinline 3종 (모바일 자동재생 필수 조건)
-         images/hero.mp4 를 떨궈두면 자동 작동. 파일이 없으면 베일이 덮어 fallback 정상. -->
+    <!-- 배경 영상 — JS가 베일 10s 사이클에 맞춰 매 사이클 정확히 1회만 재생.
+         loop/autoplay 제거 → 영상 0초 점프(루프 이음새) 완전 차단.
+         muted + playsinline 은 모바일 in-place 재생을 위해 필수 유지. -->
     <video
+      id="hero-video"
       class="absolute inset-0 w-full h-full object-cover"
-      autoplay muted loop playsinline preload="metadata"
+      muted playsinline preload="auto"
       poster="images/hero-poster.jpg"
       aria-hidden="true">
       <source src="images/hero.mp4" type="video/mp4" />
@@ -766,6 +766,80 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && mobileMenu.classList.contains('is-open')) closeMenu();
     });
+
+    /* Hero 영상 사이클 — 베일 10s 키프레임에 동기 (loop 제거, 매 사이클 1회만 재생)
+       원칙: 영상 currentTime=0 리셋은 베일 opacity 1.0 가림 상태(0~2s, 9~10s)에서만.
+             재생은 베일 페이드아웃 직후(3s) → 영상 자연 종료(8s) → 베일 페이드인. */
+    (() => {
+      const video = document.getElementById('hero-video');
+      const veil  = document.querySelector('.hero-veil');
+      if (!video || !veil) return;
+
+      // 모션 감소 선호 사용자 — 영상 재생 X, 포스터/정지 화면 유지
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+
+      let playTimer  = null;  // 3s 시점 play() 예약
+      let resetTimer = null;  // 9s 시점 currentTime=0 안전 리셋 예약
+
+      const safeResetVideo = () => {
+        video.pause();
+        try { video.currentTime = 0; } catch (e) { /* readyState 부족 시 무시 */ }
+      };
+
+      // 매 사이클 0% 시점 (=10s 경계)에서 호출 — 베일은 1.0 가림 상태
+      const onCycleStart = () => {
+        if (playTimer)  clearTimeout(playTimer);
+        if (resetTimer) clearTimeout(resetTimer);
+
+        // 0s: 영상 정지 + 0초로 리셋 (베일 1.0이 가려서 시각 변화 X)
+        safeResetVideo();
+
+        // 3s: 베일 0.4 도달 직후 재생 시작
+        playTimer = setTimeout(() => {
+          const p = video.play();
+          if (p && typeof p.catch === 'function') {
+            p.catch(() => { /* 자동재생 거부·네트워크 오류 — 포스터 유지 */ });
+          }
+        }, 3000);
+
+        // 9s: 베일이 1.0으로 완전히 덮인 직후 안전 리셋
+        //    (영상이 5s보다 길거나 buffering으로 늦게 끝나도 베일 가림 안에서 리셋)
+        resetTimer = setTimeout(() => {
+          safeResetVideo();
+        }, 9000);
+      };
+
+      // 베일 CSS animation 사이클과 동기 — JS 타이머 자체가 아닌 CSS가 마스터 클럭
+      veil.addEventListener('animationstart', (e) => {
+        if (e.animationName === 'hero-veil-cycle') onCycleStart();
+      });
+      veil.addEventListener('animationiteration', (e) => {
+        if (e.animationName === 'hero-veil-cycle') onCycleStart();
+      });
+
+      // 영상 자연 종료 — pause 상태 유지 (loop 제거로 마지막 프레임 정지)
+      video.addEventListener('ended', () => video.pause());
+
+      // 페이지 비활성/복귀 — 영상·타이머 리셋 + 베일 사이클 강제 재시작
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          if (playTimer)  clearTimeout(playTimer);
+          if (resetTimer) clearTimeout(resetTimer);
+          video.pause();
+        } else {
+          // 베일 animation을 reflow로 재시작 → animationstart 다시 fire → 사이클 동기 복원
+          veil.style.animation = 'none';
+          void veil.offsetWidth;  // 강제 reflow
+          veil.style.animation = '';
+        }
+      });
+
+      // 첫 로드 — animationstart가 listener 등록 전 발생했을 가능성 대비 수동 trigger
+      // (멱등 — clearTimeout/clearTimeout으로 중복 호출 안전)
+      onCycleStart();
+    })();
   </script>
 
 </body>
