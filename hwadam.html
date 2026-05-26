@@ -6,7 +6,6 @@
   <title>홍주화담 — 和談, 글자 풀이</title>
   <meta name="description" content="화담(和談) — 어울리고 누그러지고, 듣고 깊어지는. 홍주화담이라는 이름에 담긴 뜻." />
 
-  <!-- Open Graph — 카카오톡·SNS 공유 미리보기 -->
   <link rel="canonical" href="https://redsoju.com/hwadam" />
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="홍주화담" />
@@ -16,16 +15,13 @@
   <meta property="og:image" content="https://redsoju.com/images/og-image.png" />
   <meta property="og:locale" content="ko_KR" />
 
-  <!-- 본문 명조(본명조 = Source Han Serif KR = Noto Serif KR) + 영문(Cormorant Garamond) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
     rel="stylesheet"
   />
-  <!-- 헤드라인 — 아리따 부리 (1차: jsDelivr CDN / 정식 오픈 전 self-host 권장) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/webfontbox/Arita/font.css" />
-  <!-- UI — Pretendard -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -44,9 +40,9 @@
             'hongju-deep':'#6A1414',
           },
           fontFamily: {
-            head:  ['"Arita buri"', 'serif'],     /* 헤드라인 */
-            body:  ['"Noto Serif KR"', 'serif'],  /* 본문 — 본명조 */
-            ui:    ['Pretendard', 'sans-serif'],  /* 메뉴·라벨·푸터 */
+            head:  ['"Arita buri"', 'serif'],
+            body:  ['"Noto Serif KR"', 'serif'],
+            ui:    ['Pretendard', 'sans-serif'],
             latin: ['"Cormorant Garamond"', 'serif'],
           },
           letterSpacing: {
@@ -65,9 +61,6 @@
     }
     body { background-color: #F4F4F1; color: #171717; font-family: 'Pretendard', sans-serif; }
 
-    /* ─────────────────────────────────────────────
-       풀페이지 스냅 — index.html과 동일 결
-       ───────────────────────────────────────────── */
     .snap-section {
       scroll-snap-align: start;
       scroll-snap-stop: normal;
@@ -84,7 +77,6 @@
       html { scroll-snap-type: none; scroll-behavior: auto; }
     }
 
-    /* 내비게이션 — wadam 페이지는 전체가 밝은 톤이라 항상 paper 배경 + 먹색 글자 */
     #nav { transition: background-color 0.4s ease, box-shadow 0.4s ease; }
     #nav.nav-scrolled {
       background-color: rgba(244, 244, 241, 0.92);
@@ -96,7 +88,6 @@
     #nav.nav-scrolled .nav-fg { color: #171717; }
     #nav .nav-link:hover { color: #8E1B1B; }
 
-    /* 슬로건 페이드인 — 메인 Hero와 같은 호흡 */
     @keyframes fade-up {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -104,7 +95,6 @@
     .fade-up-1 { animation: fade-up 1.5s ease-out 0.5s both; }
     .fade-up-2 { animation: fade-up 1.5s ease-out 2.0s both; }
 
-    /* 스크롤 시 천천히 떠오르는 페이드인 */
     .reveal {
       opacity: 0;
       transform: translateY(20px);
@@ -115,7 +105,6 @@
       transform: translateY(0);
     }
 
-    /* 모바일 풀스크린 메뉴 */
     #mobile-menu {
       opacity: 0;
       visibility: hidden;
@@ -141,23 +130,16 @@
 </head>
 <body class="bg-paper text-ink antialiased">
 
-  <!-- ─────────────────────────────────────────────
-       상단 내비게이션 (메인과 동일 · wadam은 밝은 페이지라 nav-scrolled 상태 고정)
-       ───────────────────────────────────────────── -->
   <nav id="nav" class="fixed top-0 left-0 right-0 z-50 nav-scrolled">
     <div class="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
       <a href="index.html" class="nav-fg font-head font-medium text-lg md:text-xl tracking-[0.15em]">
         홍주화담
       </a>
-
-      <!-- 데스크탑 메뉴 -->
       <ul class="hidden md:flex items-center gap-10 text-sm font-ui tracking-[0.2em]">
         <li><a href="index.html#story"      class="nav-fg nav-link">BRAND</a></li>
         <li><a href="index.html#product"    class="nav-fg nav-link">SHOP</a></li>
         <li><a href="index.html#experience" class="nav-fg nav-link">체험</a></li>
       </ul>
-
-      <!-- 모바일 햄버거 -->
       <button id="menu-toggle" class="nav-fg md:hidden" aria-label="메뉴 열기" aria-expanded="false">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <line x1="3" y1="8"  x2="21" y2="8"  />
@@ -167,7 +149,6 @@
     </div>
   </nav>
 
-  <!-- 모바일 풀스크린 메뉴 -->
   <div id="mobile-menu" class="fixed inset-0 z-[60] bg-paper md:hidden flex flex-col">
     <div class="flex items-center justify-between px-6 py-5">
       <a href="index.html" class="font-head font-medium text-ink text-lg tracking-[0.15em]">홍주화담</a>
@@ -188,9 +169,7 @@
     </div>
   </div>
 
-  <!-- ─────────────────────────────────────────────
-       Hero — 한지 아이보리, 한자 두 글자가 주인공
-       ───────────────────────────────────────────── -->
+  <!-- ① Hero -->
   <section class="snap-section relative h-screen w-full overflow-hidden bg-paper">
     <div class="relative h-full flex flex-col items-center justify-center px-6 text-center">
       <h1 class="fade-up-1 font-body font-medium text-ink text-7xl md:text-9xl tracking-hanja leading-none">
@@ -202,19 +181,13 @@
     </div>
   </section>
 
-  <!-- ─────────────────────────────────────────────
-       和 — 좌측 큰 한자 / 우측 두 갈래 풀이
-       ───────────────────────────────────────────── -->
+  <!-- ② 和 -->
   <section class="snap-section bg-paper flex items-center">
     <div class="max-w-6xl mx-auto w-full px-6 md:px-10 py-24 md:py-40">
       <div class="grid md:grid-cols-2 gap-14 md:gap-20 items-center">
-
-        <!-- 큰 한자 和 -->
         <h2 class="reveal flex justify-center font-body text-ink text-9xl md:text-[15rem] leading-none">
           和
         </h2>
-
-        <!-- 두 갈래 풀이 -->
         <div class="reveal max-w-md mx-auto md:mx-0">
           <div>
             <h3 class="font-body font-medium text-ink text-xl md:text-2xl mb-5">
@@ -226,12 +199,9 @@
               서로 다른 두 사람이 잔을 사이에 두고 어울린다.
             </p>
           </div>
-
-          <!-- 붉은 점 — 모먼트 구분점과 같은 결 -->
           <div class="flex justify-center py-12 md:py-14">
             <span class="block w-2.5 h-2.5 rounded-full bg-hongju"></span>
           </div>
-
           <div>
             <h3 class="font-body font-medium text-ink text-xl md:text-2xl mb-5">
               和 = 누그러지다
@@ -243,24 +213,17 @@
             </p>
           </div>
         </div>
-
       </div>
     </div>
   </section>
 
-  <!-- ─────────────────────────────────────────────
-       談 — 우측 큰 한자 / 좌측 두 갈래 풀이 (和와 좌우 교차)
-       ───────────────────────────────────────────── -->
+  <!-- ③ 談 -->
   <section class="snap-section bg-paper flex items-center">
     <div class="max-w-6xl mx-auto w-full px-6 md:px-10 py-24 md:py-40">
       <div class="grid md:grid-cols-2 gap-14 md:gap-20 items-center">
-
-        <!-- 큰 한자 談 — 모바일 위, 데스크탑 우측 -->
         <h2 class="reveal md:order-2 flex justify-center font-body text-ink text-9xl md:text-[15rem] leading-none">
           談
         </h2>
-
-        <!-- 두 갈래 풀이 -->
         <div class="reveal max-w-md mx-auto md:mx-0">
           <div>
             <h3 class="font-body font-medium text-ink text-xl md:text-2xl mb-5">
@@ -271,12 +234,9 @@
               잘 듣는 사람의 자리에 좋은 대화가 머문다.
             </p>
           </div>
-
-          <!-- 붉은 점 -->
           <div class="flex justify-center py-12 md:py-14">
             <span class="block w-2.5 h-2.5 rounded-full bg-hongju"></span>
           </div>
-
           <div>
             <h3 class="font-body font-medium text-ink text-xl md:text-2xl mb-5">
               談 = 깊어지다
@@ -288,56 +248,50 @@
             </p>
           </div>
         </div>
-
       </div>
     </div>
   </section>
 
-  <!-- ─────────────────────────────────────────────
-       중심 문장
-       ───────────────────────────────────────────── -->
+  <!-- ④ 중심 문장 + 김정호 시구 (통합) -->
+  <!-- ★ 변경 포인트
+       · max-w-2xl(672px) → max-w-4xl(896px): 두 번째 줄 한 줄 확보
+       · 김정호 별도 섹션 제거, 이 섹션 안으로 통합
+       · 두 블록 모두 같은 max-w-4xl 컨테이너 기준 좌측 정렬 → 왼쪽 끝선 일치
+  -->
   <section class="snap-section bg-paper flex items-center">
-    <div class="max-w-2xl mx-auto w-full px-6 py-32 md:py-48">
+    <div class="max-w-4xl mx-auto w-full px-6 py-24 md:py-40">
+
+      <!-- 중심 문장 -->
       <p class="reveal font-head font-medium text-ink text-2xl md:text-3xl !leading-[2] text-left">
         홍주화담은 술을 파는 브랜드가 아니라,<br />
         진도의 붉은 술로 사람 사이에 이야기를 여는 브랜드다.
       </p>
-    </div>
-  </section>
 
-  <!-- ─────────────────────────────────────────────
-       김정호 시구 — 페이지 하단, 알아보는 사람만 발견하는 작은 보물
-       ───────────────────────────────────────────── -->
-  <section class="snap-section bg-paper flex items-center">
-    <div class="max-w-2xl mx-auto w-full px-6 py-32 md:py-48">
-      <div class="reveal pl-8 md:pl-12">
-        <p class="font-body text-ink-soft text-sm md:text-base leading-[2] tracking-[0.02em]">
+      <!-- 두 블록 사이 여백 -->
+      <div class="mt-16 md:mt-20"></div>
+
+      <!-- 김정호 시구 — 중심 문장과 동일 왼쪽 끝선 -->
+      <div class="reveal">
+        <p class="font-body text-ink-soft text-base md:text-lg leading-[2] tracking-[0.02em]">
           홍매화 떨어진 잔에 봄눈이 녹지 않았나 싶고,<br />
           술잔에 비친 홍색은 꽃구경할 때 풍경이로다.
         </p>
-        <p class="font-body text-ink-soft text-xs md:text-sm mt-4 tracking-[0.05em]">
+        <p class="font-body text-ink-soft text-sm mt-5 tracking-[0.05em]">
           — 고산자 김정호
         </p>
       </div>
+
     </div>
   </section>
 
-  <!-- ─────────────────────────────────────────────
-       푸터 — index.html과 동일
-       ───────────────────────────────────────────── -->
+  <!-- 푸터 -->
   <footer class="snap-end bg-ink text-paper">
     <div class="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-20">
-
-      <!-- 브랜드 마크 -->
       <div class="text-center">
         <p class="font-head font-medium text-paper text-2xl tracking-[0.15em]">홍주화담</p>
         <p class="font-body text-paper/40 text-xs tracking-hanja mt-3">紅酒和談</p>
       </div>
-
-      <!-- 구분선 -->
       <div class="w-full h-px bg-paper/10 mt-12 mb-10"></div>
-
-      <!-- 사업자 정보 -->
       <div class="text-center font-ui space-y-1.5 mb-10">
         <p class="text-paper/55 text-[11px] tracking-wide leading-relaxed">
           농업회사법인 ㈜트루엔팜 &nbsp;|&nbsp; 대표: 황재호
@@ -358,11 +312,7 @@
           </a>
         </p>
       </div>
-
-      <!-- 구분선 -->
       <div class="w-full h-px bg-paper/10 mb-7"></div>
-
-      <!-- 음주경고문구 (법정 문안) -->
       <div class="text-center font-ui space-y-1.5 mb-7">
         <p class="text-paper/35 text-[10px] tracking-wide leading-relaxed">
           경고: 지나친 음주는 뇌졸중, 기억력 손상이나 치매를 유발합니다. 임신 중 음주는 기형아 출생 위험을 높입니다.
@@ -371,13 +321,8 @@
           19세 미만 청소년에게 판매를 금합니다.
         </p>
       </div>
-
-      <!-- 구분선 -->
       <div class="w-full h-px bg-paper/10 mb-7"></div>
-
-      <!-- 필수 표기 -->
       <div class="flex flex-col items-center gap-1.5 text-center font-ui">
-        <!-- 아리따 글꼴 라이선스 표기 (필수 · 6px 이상) -->
         <p class="text-paper/25 text-[10px] tracking-wide leading-relaxed">
           이 제작물은 아모레퍼시픽의 아리따글꼴을 사용하여 디자인 되었습니다.
         </p>
@@ -385,12 +330,10 @@
           © 2026 홍주화담. All rights reserved.
         </p>
       </div>
-
     </div>
   </footer>
 
   <script>
-    /* 스크롤 시 천천히 떠오르는 페이드인 */
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -402,7 +345,6 @@
 
     document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
 
-    /* 모바일 풀스크린 메뉴 */
     const menuToggle = document.getElementById('menu-toggle');
     const menuClose  = document.getElementById('menu-close');
     const mobileMenu = document.getElementById('mobile-menu');
