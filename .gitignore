@@ -1,0 +1,22 @@
+# ── 내부용 파일 — GitHub/배포에 포함하지 않음 ──
+
+# Claude Code 작업 도구
+.claude/
+
+# Cloudflare 로컬 임시
+.wrangler/
+
+# 별도 프로젝트 (키즈스피치스카이 — 이 저장소와 분리 유지)
+kids-speech-sky/
+
+# 로컬 미리보기 스크립트
+serve.ps1
+
+# OG 이미지 제작용 내부 도구 (라이브 사이트에서 안 씀)
+og-builder.html
+images/calligraphy.png
+
+# 내부 문서 (외부 공개 금지)
+deploy-guide.md
+홍주화담_브랜드북.md
+홍주화담_디자인가이드.md
